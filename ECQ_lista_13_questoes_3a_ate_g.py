@@ -269,3 +269,88 @@ gamma_2 = np.exp(ln_gamma_2)
 mensagem_e = r"Os coeficientes de atividade para as respectivas valores de $ln{\gamma}$ são: "
 print(str(mensagem_e))
 print(str(gamma_2))
+
+
+#questao 3 f
+
+#  Constantes
+R = 8.314          # J mol^-1 K^-1
+T = 298.15         # K
+m_sat = 5.07       # mol kg^-1 
+
+# Extrapolação linear de ln(gamma_2) para m_sat
+# Usando os dois últimos pontos: m = 4.0 e m = 5.0
+m_last = m_array[-2:]           # [4.0, 5.0]
+lng_last = ln_gamma_2[-2:]      # valores correspondentes
+coef_lng = np.polyfit(m_last, lng_last, 1)   # ajuste linear
+p_lng_extrap = np.poly1d(coef_lng)
+
+ln_gamma_sat = p_lng_extrap(m_sat)    # ln(gamma) em 5.07
+gamma_sat = np.exp(ln_gamma_sat)      # gamma em 5.07
+a_sat = m_sat * gamma_sat             # atividade na saturação
+
+# Calcular a2(m) e Delta_G para cada ponto experimental
+a2_m = m_array * np.exp(ln_gamma_2)   # atividade do soluto em cada m
+
+# Cálculo de Delta_G
+delta_G = R * T * np.log(a2_m / a_sat)   # em J/mol
+
+# 4. Exibir tabela
+print("\n" + "=" * 75)
+print("=" * 75)
+print(f"{'m (mol/kg)':<12} {'γ₂(m)':<12} {'a₂(m)':<12} {'a₂(sat)':<12} {'ΔG_diss (J/mol)':<16}")
+print("-" * 75)
+for mi, gm, a2, dG in zip(m_array, gamma_2, a2_m, delta_G):
+    print(f"{mi:<12.2f} {gm:<12.6f} {a2:<12.6f} {a_sat:<12.6f} {dG:<16.4f}")
+
+m_sat_line = np.linspace(3.5, 5.5, 100)
+gamma_line = np.exp(coef_lng[0] * m_sat_line + coef_lng[1])
+
+
+
+plt.figure(figsize=(8, 5))
+plt.plot(m_array, gamma_2, 'o', color='#0B8FDB', linewidth=2, markersize=8)
+plt.scatter(m_sat,gamma_sat, color='red', s=100) 
+
+texto_anotacao = (f'$m_{{sat}}$ = {m_sat:.2f} mol/kg\n'
+                  f'$\\gamma_{{2,m}}^{{sat}}$ = {gamma_sat:.4f}')
+
+# 2. Adicionar a anotação com seta
+plt.annotate(texto_anotacao,
+             xy=(m_sat, gamma_sat),                # Ponto onde a seta aponta
+             xytext=(m_sat + 0.003, gamma_sat + 0.00075),  # Posição da caixa de texto (deslocada p/ direita e cima)
+             fontsize=10,
+             bbox=dict(boxstyle="round,pad=0.3",   # Caixa arredondada
+                       facecolor="white",          # Fundo branco
+                       edgecolor="black",          # Borda preta
+                       alpha=0.85))                # Leve transparência para ver o grid atrás
+
+plt.axhline(y=1, color='k', linestyle='-.', linewidth=0.75, alpha=0.55)  # linha de equilíbrio
+plt.xlabel('Molalidade $m$ (mol kg$^{-1}$)', fontsize=12)
+plt.ylabel(r'$\gamma_{2(m)}$' , fontsize=12)
+plt.title('Coeficiente de atividade vs Molalidade', fontsize=14)
+plt.grid(True, linestyle=':', alpha=0.65)
+
+plt.plot(m_sat_line, gamma_line, 'r--', label=f'Reta: ln(γ) = {coef_lng[0]:.4f}·m + {coef_lng[1]:.4f}')
+
+plt.xlim(3.85, 5.25)  # Zoom no eixo X entre 2 e 4
+plt.ylim(1.0075, 1.0225) # Zoom no eixo Y entre 4 e 16
+plt.grid(True, linestyle=':', alpha=0.65)
+plt.legend(loc='best')
+plt.tight_layout()
+plt.show()
+
+# (Opcional) Gráfico de ΔG_diss vs m
+plt.figure(figsize=(8, 5))
+plt.plot(m_array, delta_G, 'o-', color='#0B8FDB', linewidth=2, markersize=8)
+plt.axhline(y=0, color='k', linestyle='--', linewidth=1, alpha=0.7)  # linha de equilíbrio
+plt.xlabel('Molalidade $m$ (mol kg$^{-1}$)', fontsize=12)
+plt.ylabel(r'$\Delta G_{\text{diss}}$ (J mol$^{-1}$)', fontsize=12)
+plt.title('Variação de Energia Livre de Dissolução vs Molalidade', fontsize=14)
+plt.grid(True, linestyle=':', alpha=0.65)
+plt.tight_layout()
+plt.show()
+
+print("\nAtividade na saturação (a_sat) = {:.6f}".format(a_sat))
+print("ln(γ₂) em m_sat = {:.6f}".format(ln_gamma_sat))
+print("γ₂ em m_sat = {:.6f}".format(gamma_sat))
