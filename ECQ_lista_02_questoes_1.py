@@ -33,3 +33,20 @@ x_max_aprox = x_vals[idx_max]
 S_max_aprox = S_vals[idx_max]
 
 print(f"Máximo aproximado: x = {x_max_aprox:.6f}, S' = {S_max_aprox:.6f}")
+
+#----------------------------1. (d)
+N_A = 3
+V_A = 3e-6
+U_A = 25
+inverso_T_A =(1/3)*U_A**(-2/3)* (N_A*V_A)**(1/3)
+
+T_A = 1/inverso_T_A
+print(f"Valor da temperatura do sistema A: r$T_A$ = {T_A:.6f}")
+
+N_B = 9
+V_B = 3e-6
+U_B = 75
+inverso_T_B =(1/3)*U_B**(-2/3)* (N_B*V_B)**(1/3)
+
+T_B = 1/inverso_T_B
+print(f"Valor da temperatura do sistema B: r$T_A$ = {T_B:.6f}")
