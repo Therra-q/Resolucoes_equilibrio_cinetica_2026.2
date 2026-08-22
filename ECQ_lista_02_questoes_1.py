@@ -9,7 +9,7 @@ def funcao_S_x(x,N_A = 9, N_B = 3, V_A = 3e-6, V_B = 3e-6):
 
 
 
-x_vals = np.linspace(0, 1, 400)  # 500 pontos para um gráfico suave
+x_vals = np.linspace(0, 1, 400)  
 
 S_vals = funcao_S_x(x_vals)
 
